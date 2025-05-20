@@ -6,7 +6,6 @@ using Plots
 # Define parameters
 degree = 30  # degree of polynomial approximation
 χ = 10        # bond dimension for STT
-ϵ = 1e-10     # SVD truncation threshold
 
 # Define 2D Gaussian PDF
 function gaussian_pdf(x, y, Σ)
@@ -56,7 +55,7 @@ R = Diagonal(sqrt.(S)) * V'
 
 # Generate Chebyshev polynomial basis
 # We use ChebyshevT basis (first kind)
-chebyshevs = [Polynomials.ChebyshevT([zeros(k)..., 1.0]) for k in 0:degree]
+chebyshevs = [Polynomials.basis(ChebyshevT, k) for k in 0:degree]
 
 # Calculate normalization constants for Chebyshev polynomials
 # For ChebyshevT, N_0 = π and N_k = π/2 for k≥1
@@ -110,10 +109,8 @@ end
 
 # Compute error
 max_error = maximum(abs.(exact_vals - approx_vals))
-rmse = sqrt(sum((exact_vals - approx_vals).^2) / (grid_size^2))
 
 println("Maximum absolute error: $max_error")
-println("Root Mean Square Error: $rmse")
 println("SVD singular values: $(S[1:min(5,length(S))])...")
 
 # Plot results
@@ -129,5 +126,5 @@ p3 = heatmap(x_grid, y_grid, abs.(exact_vals - approx_vals)',
              title="Absolute Error", 
              xlabel="x", ylabel="y")
 
-plot(p1, p2, p3, layout=(1,3), size=(1200, 400))
-savefig("gaussian_stt_comparison.png")
+plot(p1, p2, p3, layout=(1,3), size=(1400, 400), dpi=300)
+savefig("comparison.png")
